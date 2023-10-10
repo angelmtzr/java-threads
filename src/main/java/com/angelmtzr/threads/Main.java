@@ -22,15 +22,19 @@ public class Main {
             t.start();
         }
 
-        // Make the main thread wait for all created threads to finish.
-        threads.forEach(t -> {
+        // Print the threads's states until all threads have finished
+        boolean aThreadIsAlive;
+        do {
+            // TODO: For some reason it is only running once. With and without sleep.
+            LOGGER.log(Level.INFO, "Active Threads: " + Thread.activeCount());
+            threads.forEach(t -> LOGGER.log(Level.INFO, "Thread " + t.getName() + ": " + t.getState()));
             try {
-                t.join();
+                Thread.sleep(1);
             } catch (InterruptedException e) {
-                LOGGER.log(Level.WARNING,
-                        "Thread " + t.getName() + " was interrupted while " + t.getState() + ":\n" + e);
+                LOGGER.log(Level.WARNING, "Main thread was interrupted while sleeping:\n" + e);
             }
-        });
+            aThreadIsAlive = threads.stream().anyMatch(t -> t.isAlive());
+        } while (aThreadIsAlive);
 
         LOGGER.log(Level.INFO, "Final value: " + dc.getValue());
     }
